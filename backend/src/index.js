@@ -1,9 +1,9 @@
-// src/index.js
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-// Importar el pool de conexión (lo usaremos más adelante en las rutas)
-// import pool from './config/db.js';
+
+import objetivoRoutes from './routes/objetivos.routes.js';
+import tareaRoutes from './routes/tareas.routes.js';
 
 dotenv.config();
 
@@ -19,9 +19,9 @@ app.get('/', (req, res) => {
   res.send('API de Seguimiento de Tareas está funcionando!');
 });
 
-// Aquí irán las rutas de nuestros objetivos y tareas
-// app.use('/api/objetivos', objetivoRoutes);
-// app.use('/api/tareas', tareaRoutes);
+//Rutas de la API
+app.use('/api', objetivoRoutes);
+app.use('/api', tareaRoutes);
 
 app.listen(PORT, () => {
   console.log(`Servidor backend corriendo en http://localhost:${PORT}`);
