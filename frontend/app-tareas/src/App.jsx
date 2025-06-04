@@ -22,7 +22,6 @@ function App() {
             <li>
               <Link to="/objetivos">Objetivos</Link>
             </li>
-            
           </ul>
         </nav>
 
@@ -33,7 +32,7 @@ function App() {
           <Route path="/objetivos" element={<ObjetivosListPage />} />
           <Route path="/objetivos/nuevo" element={<ObjetivoFormPage />} />
           <Route path="/objetivos/:id" element={<ObjetivoDetailPage />} />
-          
+          <Route path="/objetivos/:id/editar" element={<ObjetivoFormPage isEditMode={true} />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>

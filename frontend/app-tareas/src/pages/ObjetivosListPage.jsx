@@ -1,4 +1,3 @@
-// src/pages/ObjetivosListPage.jsx
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { obtenerTodosLosObjetivos } from '../services/apiService'; // Importa la función
@@ -18,7 +17,6 @@ function ObjetivosListPage() {
       } catch (err) {
         console.error("Error en el componente al cargar objetivos:", err);
         setError(err.message || 'Error al cargar los objetivos. Intenta de nuevo más tarde.');
-        // Opcionalmente, podrías verificar err.response.data para mensajes de error del backend
         if (err.response && err.response.data && err.response.data.message) {
             setError(err.response.data.message);
         }
@@ -61,7 +59,7 @@ function ObjetivosListPage() {
               <p style={{ fontSize: '0.8em', color: '#555' }}>
                 Creado: {new Date(objetivo.fecha_creacion).toLocaleString()}
               </p>
-              {/* Enlaces para acciones futuras */}
+              {/* Enlaces para realizar siguientes cosas */}
               <Link to={`/objetivos/${objetivo.id_objetivo}`}>Ver Detalles</Link> | {' '}
               <Link to={`/objetivos/${objetivo.id_objetivo}/editar`}>Editar</Link> | {' '}
               <button onClick={() => alert(`Eliminar objetivo ${objetivo.id_objetivo} (no implementado)`)}>
