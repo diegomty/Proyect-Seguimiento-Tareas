@@ -105,6 +105,36 @@ export const obtenerTareasDelObjetivo = async (idObjetivo) => {
 };
 
 /**
+ * Elimina una tarea por su ID.
+ * @param {string|number} idTarea - El ID de la tarea a eliminar.
+ * @returns {Promise<void>}
+ */
+export const eliminarTareaPorId = async (idTarea) => {
+  try {
+    await apiClient.delete(`/tareas/${idTarea}`);
+  } catch (error) {
+    console.error(`Error al eliminar tarea ${idTarea}:`, error);
+    throw error;
+  }
+};
+
+/**
+ * Actualiza una tarea existente.
+ * @param {string|number} idTarea - El ID de la tarea a actualizar.
+ * @param {Object} tareaData - Datos de la tarea a actualizar (puede ser un objeto parcial, ej. { completada: true }).
+ * @returns {Promise<Object>} Una promesa que resuelve a la tarea actualizada.
+ */
+export const actualizarTareaExistente = async (idTarea, tareaData) => {
+  try {
+    const response = await apiClient.put(`/tareas/${idTarea}`, tareaData);
+    return response.data;
+  } catch (error) {
+    console.error(`Error al actualizar tarea ${idTarea}:`, error);
+    throw error;
+  }
+};
+
+/**
  * Crea una nueva tarea para un objetivo específico.
  * @param {string|number} idObjetivo - El ID del objetivo al que pertenece la tarea.
  * @param {Object} tareaData - Datos de la tarea a crear ({ titulo, descripcion }).
