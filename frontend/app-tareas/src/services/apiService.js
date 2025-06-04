@@ -1,6 +1,4 @@
-// src/services/apiService.js
 import axios from 'axios';
-
 
 const API_BASE_URL = 'http://localhost:3001/api';
 
@@ -24,8 +22,7 @@ export const obtenerTodosLosObjetivos = async () => {
     return response.data;
   } catch (error) {
     console.error('Error al obtener objetivos:', error);
-    // Podrías lanzar el error para manejarlo en el componente
-    // o devolver un array vacío/mensaje de error.
+  
     throw error;
   }
 };

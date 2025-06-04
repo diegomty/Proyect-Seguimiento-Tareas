@@ -44,7 +44,7 @@ function ObjetivoDetailPage() {
   }
 
   if (!objetivo) {
-    return <p>Objetivo no encontrado.</p>; // Podría ser redundante si el error ya lo maneja
+    return <p>Objetivo no encontrado.</p>; 
   }
 
   return (
@@ -71,9 +71,7 @@ function ObjetivoDetailPage() {
       <hr style={{ margin: '20px 0' }}/>
 
       <h3>Tareas Asociadas</h3>
-      {/* Aquí podrías tener un botón para "Añadir Nueva Tarea" más adelante */}
-      {/* <Link to={`/objetivos/${id}/tareas/nueva`}>Añadir Nueva Tarea</Link> */}
-
+     
       {tareas.length === 0 ? (
         <p>Este objetivo aún no tiene tareas.</p>
       ) : (

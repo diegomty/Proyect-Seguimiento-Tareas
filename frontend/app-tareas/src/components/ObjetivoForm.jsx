@@ -11,8 +11,6 @@ function ObjetivoForm({ onSubmit, initialData = null, isEditMode = false }) {
   useEffect(() => {
     if (isEditMode && initialData) {
       setNombreObjetivo(initialData.nombre_objetivo || '');
-      // Las fechas del backend vienen como YYYY-MM-DDTHH:mm:ss.sssZ
-      // El input type="date" espera YYYY-MM-DD
       setFechaInicio(initialData.fecha_inicio ? initialData.fecha_inicio.split('T')[0] : '');
       setFechaPlaneadaFinal(initialData.fecha_planeada_final ? initialData.fecha_planeada_final.split('T')[0] : '');
     }
