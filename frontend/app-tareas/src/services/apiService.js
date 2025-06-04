@@ -104,3 +104,18 @@ export const obtenerTareasDelObjetivo = async (idObjetivo) => {
   }
 };
 
+/**
+ * Crea una nueva tarea para un objetivo específico.
+ * @param {string|number} idObjetivo - El ID del objetivo al que pertenece la tarea.
+ * @param {Object} tareaData - Datos de la tarea a crear ({ titulo, descripcion }).
+ * @returns {Promise<Object>} Una promesa que resuelve a la tarea creada.
+ */
+export const crearNuevaTarea = async (idObjetivo, tareaData) => {
+  try {
+    const response = await apiClient.post(`/objetivos/${idObjetivo}/tareas`, tareaData);
+    return response.data;
+  } catch (error) {
+    console.error(`Error al crear tarea para el objetivo ${idObjetivo}:`, error);
+    throw error;
+  }
+};

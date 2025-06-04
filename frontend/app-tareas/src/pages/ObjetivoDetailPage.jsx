@@ -1,14 +1,93 @@
 // src/pages/ObjetivoDetailPage.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react'; // Añadir useCallback
 import { useParams, Link } from 'react-router-dom';
-import { obtenerObjetivoPorId, obtenerTareasDelObjetivo } from '../services/apiService';
+import {
+  obtenerObjetivoPorId,
+  obtenerTareasDelObjetivo,
+  crearNuevaTarea 
+} from '../services/apiService';
+
+// Un pequeño componente para el formulario de nueva tarea (puede estar en este archivo o separado)
+function NuevaTareaForm({ idObjetivo, onTareaCreada }) {
+  const [titulo, setTitulo] = useState('');
+  const [descripcion, setDescripcion] = useState('');
+  const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!titulo.trim()) {
+      setError('El título de la tarea es requerido.');
+      return;
+    }
+    setError('');
+    setSubmitting(true);
+    try {
+      const nuevaTarea = await crearNuevaTarea(idObjetivo, { titulo, descripcion });
+      onTareaCreada(nuevaTarea); // Llama al callback con la tarea creada
+      setTitulo(''); // Limpiar formulario
+      setDescripcion('');
+    } catch (apiError) {
+      console.error("Error al crear tarea (formulario):", apiError);
+      setError(apiError.response?.data?.message || apiError.message || 'Error al crear la tarea.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} style={{ marginTop: '20px', marginBottom: '20px', padding: '15px', border: '1px dashed #ccc' }}>
+      <h4>Añadir Nueva Tarea</h4>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <div>
+        <label htmlFor="tarea-titulo">Título:</label>
+        <input
+          type="text"
+          id="tarea-titulo"
+          value={titulo}
+          onChange={(e) => setTitulo(e.target.value)}
+          required
+          disabled={submitting}
+          style={{ marginLeft: '5px', marginBottom: '5px' }}
+        />
+      </div>
+      <div>
+        <label htmlFor="tarea-descripcion">Descripción (Opcional):</label>
+        <textarea
+          id="tarea-descripcion"
+          value={descripcion}
+          onChange={(e) => setDescripcion(e.target.value)}
+          disabled={submitting}
+          style={{ marginLeft: '5px', width: '90%', minHeight: '60px' }}
+        />
+      </div>
+      <button type="submit" disabled={submitting} style={{ marginTop: '10px' }}>
+        {submitting ? 'Añadiendo...' : 'Añadir Tarea'}
+      </button>
+    </form>
+  );
+}
+
 
 function ObjetivoDetailPage() {
-  const { id } = useParams(); // Obtiene el 'id' de la URL
+  const { id } = useParams();
   const [objetivo, setObjetivo] = useState(null);
   const [tareas, setTareas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Usamos useCallback para memoizar la función cargarTareas,
+  // así no se recrea innecesariamente si se pasa como dependencia a otro useEffect (no es el caso aquí aún, pero es buena práctica)
+  const cargarTareas = useCallback(async () => {
+    try {
+        const tareasData = await obtenerTareasDelObjetivo(id);
+        setTareas(tareasData);
+    } catch (err) {
+        console.error("Error al cargar tareas:", err);
+        setError(prevError => `${prevError || ''} Error al cargar tareas: ${err.response?.data?.message || err.message}. `);
+    }
+  }, [id]);
+
 
   useEffect(() => {
     const cargarDatosDelObjetivo = async () => {
@@ -16,13 +95,10 @@ function ObjetivoDetailPage() {
         setLoading(true);
         setError(null);
 
-        // Cargar detalles del objetivo
         const objetivoData = await obtenerObjetivoPorId(id);
         setObjetivo(objetivoData);
 
-        // Cargar tareas del objetivo
-        const tareasData = await obtenerTareasDelObjetivo(id);
-        setTareas(tareasData);
+        await cargarTareas(); // Cargar tareas después de cargar el objetivo
 
       } catch (err) {
         console.error("Error al cargar datos del objetivo:", err);
@@ -32,8 +108,15 @@ function ObjetivoDetailPage() {
       }
     };
 
-    cargarDatosDelObjetivo();
-  }, [id]); // Se ejecuta cuando el 'id' cambia
+    if (id) { 
+        cargarDatosDelObjetivo();
+    }
+  }, [id, cargarTareas]);
+
+  // Callback para cuando se crea una nueva tarea
+  const handleTareaCreada = (nuevaTarea) => {
+    setTareas(prevTareas => [...prevTareas, nuevaTarea]);
+  };
 
   if (loading) {
     return <p>Cargando detalles del objetivo...</p>;
@@ -44,12 +127,13 @@ function ObjetivoDetailPage() {
   }
 
   if (!objetivo) {
-    return <p>Objetivo no encontrado.</p>; 
+    return <p>Objetivo no encontrado.</p>;
   }
 
   return (
     <div>
       <h2>Detalles del Objetivo</h2>
+      {/* ... (detalles del objetivo como antes) ... */}
       <h3>{objetivo.nombre_objetivo}</h3>
       <p><strong>ID:</strong> {objetivo.id_objetivo}</p>
       <p>
@@ -71,7 +155,10 @@ function ObjetivoDetailPage() {
       <hr style={{ margin: '20px 0' }}/>
 
       <h3>Tareas Asociadas</h3>
-     
+
+      {/* Formulario para añadir nueva tarea */}
+      <NuevaTareaForm idObjetivo={objetivo.id_objetivo} onTareaCreada={handleTareaCreada} />
+
       {tareas.length === 0 ? (
         <p>Este objetivo aún no tiene tareas.</p>
       ) : (
@@ -86,7 +173,7 @@ function ObjetivoDetailPage() {
               <p style={{ fontSize: '0.8em', color: '#555' }}>
                 Creada: {new Date(tarea.fecha_creacion).toLocaleString()}
               </p>
-              {/* Botones para acciones de tarea (editar, eliminar, marcar completada) */}
+              {/* Aquí irán botones para editar/eliminar tarea */}
             </li>
           ))}
         </ul>

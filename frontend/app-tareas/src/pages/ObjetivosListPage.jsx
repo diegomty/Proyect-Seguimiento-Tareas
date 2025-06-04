@@ -1,39 +1,59 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { obtenerTodosLosObjetivos } from '../services/apiService'; // Importa la función
+import { obtenerTodosLosObjetivos, eliminarObjetivoPorId } from '../services/apiService'; // Importa la función
 
 function ObjetivosListPage() {
   const [objetivos, setObjetivos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [deleteError, setDeleteError] = useState(null);
 
-  useEffect(() => {
+  
     const cargarObjetivos = async () => {
       try {
         setLoading(true);
+        setError(null); // Limpiar errores previos
+        setDeleteError(null); // Limpiar errores de eliminación previos
         const data = await obtenerTodosLosObjetivos();
         setObjetivos(data);
-        setError(null); // Limpiar errores previos
       } catch (err) {
         console.error("Error en el componente al cargar objetivos:", err);
-        setError(err.message || 'Error al cargar los objetivos. Intenta de nuevo más tarde.');
-        if (err.response && err.response.data && err.response.data.message) {
-            setError(err.response.data.message);
-        }
+        const errMsg = err.response?.data?.message || err.message || 'Error al cargar los objetivos.';
+        setError(errMsg);
       } finally {
         setLoading(false);
       }
     };
-
+  useEffect(() => {
     cargarObjetivos();
   }, []); // El array vacío [] asegura que useEffect se ejecute solo una vez (al montar el componente)
+
+  const handleEliminarObjetivo = async (idObjetivo) => {
+    // Pedir confirmación
+    if (window.confirm('¿Estás seguro de que deseas eliminar este objetivo y todas sus tareas asociadas?')) {
+      try {
+        setDeleteError(null); // Limpiar errores de eliminación previos
+        await eliminarObjetivoPorId(idObjetivo);
+        // Actualizar la lista de objetivos en el estado, filtrando el eliminado
+        setObjetivos(prevObjetivos => prevObjetivos.filter(obj => obj.id_objetivo !== idObjetivo));
+        // Opcional: mostrar un mensaje de éxito
+        alert('Objetivo eliminado exitosamente.');
+      } catch (err) {
+        console.error(`Error al eliminar objetivo ${idObjetivo}:`, err);
+        const errMsg = err.response?.data?.message || err.message || 'Error al eliminar el objetivo.';
+        setDeleteError(errMsg); // Mostrar error de eliminación
+        alert(`Error al eliminar: ${errMsg}`); // También como alerta para visibilidad inmediata
+      }
+    }
+  };
 
   if (loading) {
     return <p>Cargando objetivos...</p>;
   }
 
-  if (error) {
-    return <p style={{ color: 'red' }}>Error: {error}</p>;
+  // Mostrar error de carga principal si existe
+  if (error && !loading) {
+    return <p style={{ color: 'red' }}>Error de carga: {error}</p>;
   }
 
   return (
@@ -43,7 +63,10 @@ function ObjetivosListPage() {
         Crear Nuevo Objetivo
       </Link>
 
-      {objetivos.length === 0 ? (
+      {/* Mostrar error de eliminación si existe */}
+      {deleteError && <p style={{ color: 'red', marginTop: '10px' }}>Error al eliminar: {deleteError}</p>}
+
+      {objetivos.length === 0 && !error ? ( // Asegurarse de no mostrar "No hay objetivos" si hubo un error de carga
         <p>No hay objetivos creados todavía.</p>
       ) : (
         <ul style={{ listStyle: 'none', padding: 0 }}>
@@ -59,10 +82,9 @@ function ObjetivosListPage() {
               <p style={{ fontSize: '0.8em', color: '#555' }}>
                 Creado: {new Date(objetivo.fecha_creacion).toLocaleString()}
               </p>
-              {/* Enlaces para realizar siguientes cosas */}
               <Link to={`/objetivos/${objetivo.id_objetivo}`}>Ver Detalles</Link> | {' '}
               <Link to={`/objetivos/${objetivo.id_objetivo}/editar`}>Editar</Link> | {' '}
-              <button onClick={() => alert(`Eliminar objetivo ${objetivo.id_objetivo} (no implementado)`)}>
+              <button onClick={() => handleEliminarObjetivo(objetivo.id_objetivo)}> {/* LLAMADA A LA FUNCIÓN */}
                 Eliminar
               </button>
             </li>
