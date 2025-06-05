@@ -1,4 +1,3 @@
-// src/components/ObjetivoForm.jsx
 import React, { useState, useEffect } from 'react';
 
 function ObjetivoForm({ onSubmit, initialData = null, isEditMode = false }) {
