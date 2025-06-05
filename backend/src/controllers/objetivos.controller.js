@@ -1,4 +1,3 @@
-// src/controllers/objetivos.controller.js
 import pool from '../config/db.js';
 
 // Crear un nuevo objetivo

@@ -1,4 +1,3 @@
-// src/routes/objetivos.routes.js
 import { Router } from 'express';
 import {
     crearObjetivo,
