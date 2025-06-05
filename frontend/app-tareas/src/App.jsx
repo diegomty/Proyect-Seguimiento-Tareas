@@ -12,10 +12,9 @@ import './App.css';
 function App() {
   return (
     <Router>
-      <div>
-       
-        <nav style={{ padding: '10px', marginBottom: '10px', background: '#f0f0f0' }}>
-          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', gap: '15px' }}>
+      <div className="app-container"> 
+        <nav className="main-nav"> 
+          <ul>
             <li>
               <Link to="/">Inicio</Link>
             </li>
@@ -24,8 +23,6 @@ function App() {
             </li>
           </ul>
         </nav>
-
-        <hr /> 
 
         <Routes>
           <Route path="/" element={<HomePage />} />

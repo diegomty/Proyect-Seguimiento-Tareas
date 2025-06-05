@@ -4,8 +4,8 @@ import React from 'react';
 function HomePage() {
   return (
     <div>
-      <h2>Página de Inicio</h2>
-      <p>Bienvenido a tu aplicación de seguimiento de tareas.</p>
+      <h2>Bienvenido a la aplicación de seguimiento de tareas y objetivos.</h2>
+      <p></p>
     </div>
   );
 }
