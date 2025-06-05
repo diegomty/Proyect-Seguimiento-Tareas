@@ -21,7 +21,7 @@
 
 /* Estilos para la barra de navegación */
 .main-nav {
-  background-color: #f8f9fa; 
+  background-color: #50a1ed; 
   padding: 15px 20px;
   border-radius: 5px;
   margin-bottom: 20px;
@@ -38,8 +38,8 @@
 
 .main-nav a {
   text-decoration: none;
-  color: #007bff;
-  font-weight: 500;
+  color: #0c0d0e;
+  font-weight: bold;
 }
 
 .main-nav a:hover {

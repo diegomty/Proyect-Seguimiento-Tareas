@@ -59,19 +59,19 @@ function ObjetivosListPage() {
   return (
     <div>
       <h2>Mis Objetivos</h2>
-      <Link to="/objetivos/nuevo" style={{ marginBottom: '20px', display: 'inline-block' }}>
+      <Link to="/objetivos/nuevo" className="action-link">
         Crear Nuevo Objetivo
       </Link>
 
       {/* Mostrar error de eliminación si existe */}
       {deleteError && <p style={{ color: 'red', marginTop: '10px' }}>Error al eliminar: {deleteError}</p>}
 
-      {objetivos.length === 0 && !error ? ( // Asegurarse de no mostrar "No hay objetivos" si hubo un error de carga
+      {objetivos.length === 0 && !error ? ( 
         <p>No hay objetivos creados todavía.</p>
       ) : (
-        <ul style={{ listStyle: 'none', padding: 0 }}>
+        <ul className="items-list">
           {objetivos.map((objetivo) => (
-            <li key={objetivo.id_objetivo} style={{ border: '1px solid #ccc', marginBottom: '10px', padding: '10px' }}>
+            <li key={objetivo.id_objetivo} className="item-card">
               <h3>{objetivo.nombre_objetivo}</h3>
               <p>
                 Inicio: {objetivo.fecha_inicio ? new Date(objetivo.fecha_inicio).toLocaleDateString() : 'No especificada'}
