@@ -18,9 +18,6 @@ function App() {
             <li>
               <Link to="/">Inicio</Link>
             </li>
-            <li>
-              <Link to="/objetivos">Objetivos</Link>
-            </li>
           </ul>
         </nav>
 

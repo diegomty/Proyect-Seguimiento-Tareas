@@ -1,4 +1,3 @@
-// src/controllers/tareas.controller.js
 import pool from '../config/db.js';
 
 // Helper simple para asegurar que 'completada' sea booleano en la respuesta
